@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ public class FirstActivity extends AppCompatActivity {
         setContentView(R.layout.first_layout);
         Button buttonCurrent = (Button)findViewById(R.id.button_current);
         Button buttonSetting = (Button)findViewById(R.id.button_setting);
+        Button buttonSynchronize = (Button)findViewById(R.id.button_synchronize);
         buttonCurrent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,6 +36,16 @@ public class FirstActivity extends AppCompatActivity {
                 Toast.makeText(FirstActivity.this,"设置边界",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(FirstActivity.this,Setting.class);
                 startActivity(intent);
+            }
+        });
+        buttonSynchronize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CurrentTime currentTime = new CurrentTime();
+                currentTime.GetTime();
+                Log.d("yeartime", currentTime.my_time_1);
+                Log.d("hourtime", currentTime.my_time_2);
+                Toast.makeText(FirstActivity.this,"已同步时间到下位机",Toast.LENGTH_SHORT).show();
             }
         });
     }

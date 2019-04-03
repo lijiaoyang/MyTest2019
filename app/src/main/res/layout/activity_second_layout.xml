@@ -12,20 +12,48 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/datepicker1"
+            android:hint="起始日期"
+            android:textAlignment = "center"
             android:ems="10"/>
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/datepicker2"
+            android:hint="终止日期"
+            android:textAlignment = "center"
             android:ems="10"/>
     </LinearLayout>
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="输入temperature"
+        android:inputType="datetime"
+        android:textAlignment="center" />
+    <EditText
+        android:id="@+id/editText3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="输入humi"
+        android:inputType="number"
+        android:textAlignment="center" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="查看某段时间温湿度"
-        android:textSize="18sp"/>
+        android:text="插入@"
+        android:textSize="18sp"
+        android:id="@+id/button_SeeTime"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="查询@"
+        android:textSize="18sp"
+        android:id="@+id/button_SeeTodayTime"/>
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/line_chart"
         android:layout_width="fill_parent"

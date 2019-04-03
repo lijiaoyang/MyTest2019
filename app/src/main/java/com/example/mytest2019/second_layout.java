@@ -1,12 +1,18 @@
 package com.example.mytest2019;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Picture;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
@@ -28,103 +34,129 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
-
+import android.database.sqlite.SQLiteOpenHelper;
+import org.w3c.dom.Text;
 
 //近期温湿度
 public class second_layout extends AppCompatActivity {
     private LineChartView lineChart;
-
-    String[] date = {"3-20","3-21","3-22","3-23","3-24","3-25","3-26","3-27","3-28","3-29"};//X轴的标注
-    int[] score= {22,13,16,14,19,21,17,16,16,13};//图表的数据点
+    String PickTime,date1,date2;
+    String[] date = {"3-20","3-21","3-22","3-23","3-24","3-25","3-26","3-27","3-28","3-29","3-30","3-31","4-1"};//X轴的标注
+    int[] score= {22,13,16,14,19,21,19,22,12,15,13,16,20};//图表的数据点
     private List<PointValue> mPointValues = new ArrayList<PointValue>();
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
     private EditText mEditText1,mEditText2;
+    private Button seetime,seetodaytime;
+    String tim1,tim2;
+    int temp1,humi1;
+    private SQLiteHelper dbHelper;  //数据库
+    String getmytime,gettemperature,gethumi;
+    private ListView lv;
+    EditText tempedit,humiedit;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second_layout);
-        lineChart = (LineChartView)findViewById(R.id.line_chart);
-        getAxisXLables();//获取x轴的标注
-        getAxisPoints();//获取坐标点
-        initLineChart();//初始化
         mEditText1 = (EditText) findViewById(R.id.datepicker1);
         mEditText2 = (EditText) findViewById(R.id.datepicker2);
-        mEditText1.setOnTouchListener(new OnTouchListener() {
+        mEditText1.setHint("起始日期");
+        mEditText2.setHint("终止日期");
+        lineChart = (LineChartView)findViewById(R.id.line_chart);
+        seetime = (Button)findViewById(R.id.button_SeeTime);
+        seetodaytime = (Button)findViewById(R.id.button_SeeTodayTime);
+        setScore(mEditText1);
+        setScore(mEditText2);
 
+        getAxisXLables(0,5);//获取x轴的标注
+        getAxisPoints(0,5);//获取坐标点
+        initLineChart();//初始化
+
+        //多余
+        tempedit = (EditText)findViewById(R.id.editText2);
+        humiedit = (EditText)findViewById(R.id.editText3);
+        seetime.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    showDatePickDlg(mEditText1);
-                    return true;
-                }
-                return false;
+            public void onClick(View v) {
+                tim1 = mEditText1.getText().toString();
+                tim2 = mEditText2.getText().toString();
+                temp1 = Integer.parseInt(tempedit.getText().toString());
+                humi1 = Integer.parseInt(humiedit.getText().toString());
+                addinfo();
+                Toast.makeText(second_layout.this,"已经插入",Toast.LENGTH_SHORT).show();
             }
         });
-        mEditText2.setOnTouchListener(new OnTouchListener() {
-
+        seetodaytime.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    showDatePickDlg(mEditText2);
-                    return true;
-                }
-                return false;
+            public void onClick(View v) {
+                queryinfo();
+                Toast.makeText(second_layout.this,"查询数据库",Toast.LENGTH_SHORT).show();
             }
         });
-        mEditText1.setOnFocusChangeListener(new OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showDatePickDlg(mEditText1);
-                }
-            }
-        });
-        mEditText2.setOnFocusChangeListener(new OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showDatePickDlg(mEditText2);
-                }
-            }
-        });
-
     }
 
+    public void setScore(final EditText medit){
+        medit.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    showDatePickDlg(medit);
+                    return true;
+                }
+                return false;
+            }
+        });
+        medit.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    showDatePickDlg(medit);
+                }
+            }
+        });
+    }
     public void showDatePickDlg(final EditText medit) {
         Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
+
         DatePickerDialog datePickerDialog = new DatePickerDialog(second_layout.this, new OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month+1;
-                medit.setText(year + "-" + month + "-" + dayOfMonth);
-                //second_layout.this.medit.setText(year + "-" + month + "-" + dayOfMonth);
-                Toast.makeText(second_layout.this, year + "-" + month + "-" + dayOfMonth, Toast.LENGTH_SHORT).show();
+                if(month>9 && dayOfMonth >9)
+                    PickTime = year + "-" + month + "-" + dayOfMonth;
+                else if (month>9 && dayOfMonth <=9)
+                    PickTime = year + "-" + month + "-0" + dayOfMonth;
+                else if (month<=9 && dayOfMonth >9)
+                    PickTime = year + "-0" + month + "-" + dayOfMonth;
+                else if (month<=9 && dayOfMonth <=9)
+                    PickTime = year + "-0" + month + "-0" + dayOfMonth;
+                medit.setText(PickTime);
+                Toast.makeText(second_layout.this, PickTime, Toast.LENGTH_SHORT).show();
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
-
     /**
      * 设置X 轴的显示
      */
-    private void getAxisXLables() {
-        for (int i = 0; i < date.length; i++) {
+    private void getAxisXLables(int begin,int end) {
+        for (int i = begin; i < end+1; i++) {
             mAxisXValues.add(new AxisValue(i).setLabel(date[i]));
         }
     }
     /**
      * 图表的每个点的显示
      */
-    private void getAxisPoints() {
-        for (int i = 0; i < score.length; i++) {
+    private void getAxisPoints(int begin,int end) {
+        for (int i = begin; i < end+1; i++) {
             mPointValues.add(new PointValue(i, score[i]));
         }
     }
-
     private void initLineChart() {
         Line line = new Line(mPointValues).setColor(Color.parseColor("#FFCD41"));  //折线的颜色（橙色）
         List<Line> lines = new ArrayList<Line>();
@@ -137,7 +169,6 @@ public class second_layout extends AppCompatActivity {
         lines.add(line);
         LineChartData data = new LineChartData();
         data.setLines(lines);
-
         //坐标轴
         Axis axisX = new Axis(); //X轴
         axisX.setHasTiltedLabels(true);  //X坐标轴字体是斜的显示还是直的，true是斜的显示
@@ -147,14 +178,11 @@ public class second_layout extends AppCompatActivity {
         axisX.setValues(mAxisXValues);  //填充X轴的坐标名称
         data.setAxisXBottom(axisX); //x 轴在底部
         axisX.setHasLines(true); //x 轴分割线
-
         // Y轴是根据数据的大小自动设置Y轴上限(在下面我会给出固定Y轴数据个数的解决方案)
         Axis axisY = new Axis();  //Y轴
         axisY.setName("");//y轴标注
         axisY.setTextSize(10);//设置字体大小
         data.setAxisYLeft(axisY);  //Y轴设置在左边
-
-
         //设置行为属性，支持缩放、滑动以及平移
         lineChart.setInteractive(true);
         lineChart.setZoomType(ZoomType.HORIZONTAL);
@@ -162,14 +190,46 @@ public class second_layout extends AppCompatActivity {
         lineChart.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
         lineChart.setLineChartData(data);
         lineChart.setVisibility(View.VISIBLE);
-        /**注：下面的7，10只是代表一个数字去类比而已
-         * 当时是为了解决X轴固定数据个数。见（http://forum.xda-developers.com/tools/programming/library-hellocharts-charting-library-t2904456/page2）;
-         */
         //X轴数据的显示个数
         Viewport v = new Viewport(lineChart.getMaximumViewport());
         v.left = 0;
         v.right = 7;
         lineChart.setCurrentViewport(v);
+    }
+
+    public void addinfo(){
+        dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("mytime", tim1);
+        values.put("temperature",temp1);
+        values.put("humi", humi1);
+        db.insert("timedb",null,values);
+    }
+    public void queryinfo(){
+        final ArrayList<HashMap<String, Object>> listItem = new ArrayList <HashMap<String,Object>>();/*在数组中存放数据*/
+        //第二个参数是数据库名
+        dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from timedb", null);
+        if (cursor != null && cursor.getCount() > 0) {
+            while(cursor.moveToNext()) {
+                getmytime = cursor.getString(0);
+                gettemperature = cursor.getString(1);
+                gethumi = cursor.getString(2);
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("mytime", getmytime);
+                map.put("temperature", gettemperature);
+                map.put("humi",gethumi);
+                listItem.add(map);
+                SimpleAdapter mSimpleAdapter = new SimpleAdapter(second_layout.this,listItem,R.layout.activity_second_layout,
+                        new String[] {"mytime","temperature","humi"},
+                        new int[] {R.id.ItemText1,R.id.ItemText2,R.id.ItemText3});
+                lv.setAdapter(mSimpleAdapter);//为ListView绑定适配器
+            }
+        }
+        cursor.close();
+        db.close();
     }
 
 }

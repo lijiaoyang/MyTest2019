@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true"
     android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="温度："
+            android:gravity="center_horizontal"
             android:textSize="16sp"
             android:layout_margin="25dp"
             android:layout_weight="1"/>
@@ -34,16 +37,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="湿度："
+            android:gravity="center_horizontal"
             android:textSize="16sp"
             android:layout_margin="25dp"
             android:layout_weight="1"/>
+
         <TextView
             android:id="@+id/Curshidu"
-            android:text=""
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            />
+            android:text="" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,14 +61,14 @@
             android:layout_height="wrap_content"
             android:layout_margin="25dp"
             android:layout_weight="1"
+            android:gravity="center_horizontal"
             android:text="加湿器开关："
             android:textSize="16sp" />
 
         <Switch
-            android:layout_width="95dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:switchMinWidth="0dp"
             android:textOff="开"
             android:textOn="关" />
     </LinearLayout>
@@ -82,14 +86,15 @@
             android:layout_height="wrap_content"
             android:layout_margin="25dp"
             android:layout_weight="1"
+            android:gravity="center_horizontal"
             android:text="热风开关："
             android:textSize="16sp" />
 
         <Switch
-            android:layout_width="95dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:switchMinWidth="0dp"
+            android:layout_centerInParent = "true"
             android:textOff="开"
             android:textOn="关" />
     </LinearLayout>
@@ -106,14 +111,14 @@
             android:layout_height="wrap_content"
             android:layout_margin="25dp"
             android:layout_weight="1"
+            android:gravity="center_horizontal"
             android:text="冷风开关："
             android:textSize="16sp" />
 
         <Switch
-            android:layout_width="95dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:switchMinWidth="0dp"
             android:textOff="开"
             android:textOn="关" />
     </LinearLayout>

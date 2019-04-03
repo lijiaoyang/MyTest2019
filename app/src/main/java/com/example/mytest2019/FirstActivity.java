@@ -19,13 +19,14 @@ public class FirstActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.first_layout);
-        Button buttonCurrent = (Button)findViewById(R.id.button_current);
-        Button buttonSetting = (Button)findViewById(R.id.button_setting);
-        Button buttonSynchronize = (Button)findViewById(R.id.button_synchronize);
+        Button buttonCurrent = (Button)findViewById(R.id.button_current);   //近期温湿度
+        Button buttonSetting = (Button)findViewById(R.id.button_setting);   //设置边界
+        Button buttonSynchronize = (Button)findViewById(R.id.button_synchronize);   //同步时间
         buttonCurrent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(FirstActivity.this,"近期的温湿度",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(FirstActivity.this,"近期的温湿度",Toast.LENGTH_SHORT).show();
+                //页面跳转
                 Intent intent = new Intent(FirstActivity.this,second_layout.class);
                 startActivity(intent);
             }
@@ -33,7 +34,7 @@ public class FirstActivity extends AppCompatActivity {
         buttonSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(FirstActivity.this,"设置边界",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(FirstActivity.this,"设置边界",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(FirstActivity.this,Setting.class);
                 startActivity(intent);
             }

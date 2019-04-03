@@ -12,7 +12,7 @@ import android.util.Log;
 public class TestSQLite {
     //一些宏定义和声明
     private static final String TAG = "UserDataManager";
-    private static final String DB_NAME = "MyCurrent.db";
+    private static final String DB_NAME = "CurrentData.db";
     private static final String TABLE_NAME = "Current";   //表名
     private static final int DB_VERSION = 2;
     private Context mContext = null;

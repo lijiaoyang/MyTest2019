@@ -17,7 +17,6 @@ public class TestSQLite {
     private static final int DB_VERSION = 2;
     private Context mContext = null;
 
-    //创建用户book表
     private static final String DB_CREATE = "CREATE TABLE TABLE_NAME ("
             + "TimeId text primary key,"
             + "Temperature integer not null,"

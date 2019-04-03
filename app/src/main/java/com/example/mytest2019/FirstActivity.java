@@ -25,7 +25,6 @@ public class FirstActivity extends AppCompatActivity {
         buttonCurrent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(FirstActivity.this,"近期的温湿度",Toast.LENGTH_SHORT).show();
                 //页面跳转
                 Intent intent = new Intent(FirstActivity.this,second_layout.class);
                 startActivity(intent);
@@ -34,7 +33,6 @@ public class FirstActivity extends AppCompatActivity {
         buttonSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(FirstActivity.this,"设置边界",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(FirstActivity.this,Setting.class);
                 startActivity(intent);
             }

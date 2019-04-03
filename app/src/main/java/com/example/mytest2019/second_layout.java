@@ -43,17 +43,18 @@ import org.w3c.dom.Text;
 //近期温湿度
 public class second_layout extends AppCompatActivity {
     private LineChartView lineChart;
-    String PickTime,date1,date2;
-    String[] date = {"3-20","3-21","3-22","3-23","3-24","3-25","3-26","3-27","3-28","3-29","3-30","3-31","4-1"};//X轴的标注
-    int[] score= {22,13,16,14,19,21,19,22,12,15,13,16,20};//图表的数据点
+    String PickTime;
+    String[] date = new String[15];
+    int[] score= new int[15];
     private List<PointValue> mPointValues = new ArrayList<PointValue>();
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
     private EditText mEditText1,mEditText2;
-    private Button seetime,seetodaytime;
+    private Button seetime,seetodaytime,seetemp,seehumi;
     String tim1,tim2;
-    int temp1,humi1;
+    int temp1,humi1,index=0;
     private SQLiteHelper dbHelper;  //数据库
-    String getmytime,gettemperature,gethumi;
+    String getmytime;
+    int gettemperature,gethumi;
     private ListView lv;
     EditText tempedit,humiedit;
 
@@ -61,26 +62,30 @@ public class second_layout extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second_layout);
-        mEditText1 = (EditText) findViewById(R.id.datepicker1);
-        mEditText2 = (EditText) findViewById(R.id.datepicker2);
-        mEditText1.setHint("起始日期");
-        mEditText2.setHint("终止日期");
-        lineChart = (LineChartView)findViewById(R.id.line_chart);
-        seetime = (Button)findViewById(R.id.button_SeeTime);
-        seetodaytime = (Button)findViewById(R.id.button_SeeTodayTime);
+        FVBI();
         setScore(mEditText1);
         setScore(mEditText2);
-
-        getAxisXLables(0,5);//获取x轴的标注
-        getAxisPoints(0,5);//获取坐标点
-        initLineChart();//初始化
-
-        //多余
-        tempedit = (EditText)findViewById(R.id.editText2);
-        humiedit = (EditText)findViewById(R.id.editText3);
+        seetemp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getAxisXLables();//获取x轴的标注
+                getAxisPoints();//获取坐标点
+                initLineChart(1);//初始化
+            }
+        });
+        seehumi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getAxisXLables();//获取x轴的标注
+                getAxisPoints();//获取坐标点
+                initLineChart(2);//初始化
+            }
+        });
         seetime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tempedit = (EditText)findViewById(R.id.editText2);
+                humiedit = (EditText)findViewById(R.id.editText3);
                 tim1 = mEditText1.getText().toString();
                 tim2 = mEditText2.getText().toString();
                 temp1 = Integer.parseInt(tempedit.getText().toString());
@@ -93,11 +98,23 @@ public class second_layout extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 queryinfo();
+                for (int i = 0; i < date.length; i++) {
+                    Log.d("mydate",date[i]+" "+score[i]);
+                }
                 Toast.makeText(second_layout.this,"查询数据库",Toast.LENGTH_SHORT).show();
             }
         });
     }
-
+    public void FVBI(){
+        mEditText1 = (EditText) findViewById(R.id.datepicker1);
+        mEditText2 = (EditText) findViewById(R.id.datepicker2);
+        lineChart = (LineChartView)findViewById(R.id.line_chart);
+        seetime = (Button)findViewById(R.id.button_SeeTime);
+        seetodaytime = (Button)findViewById(R.id.button_SeeTodayTime);
+        lv=(ListView)findViewById(R.id.listview);
+        seetemp = (Button)findViewById(R.id.button_SeeTemp);
+        seehumi = (Button)findViewById(R.id.button_SeeHumi);
+    }
     public void setScore(final EditText medit){
         medit.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -128,13 +145,13 @@ public class second_layout extends AppCompatActivity {
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month+1;
                 if(month>9 && dayOfMonth >9)
-                    PickTime = year + "-" + month + "-" + dayOfMonth;
+                    PickTime = month + "-" + dayOfMonth;
                 else if (month>9 && dayOfMonth <=9)
-                    PickTime = year + "-" + month + "-0" + dayOfMonth;
+                    PickTime = month + "-0" + dayOfMonth;
                 else if (month<=9 && dayOfMonth >9)
-                    PickTime = year + "-0" + month + "-" + dayOfMonth;
+                    PickTime = "0" + month + "-" + dayOfMonth;
                 else if (month<=9 && dayOfMonth <=9)
-                    PickTime = year + "-0" + month + "-0" + dayOfMonth;
+                    PickTime = "0" + month + "-0" + dayOfMonth;
                 medit.setText(PickTime);
                 Toast.makeText(second_layout.this, PickTime, Toast.LENGTH_SHORT).show();
             }
@@ -144,20 +161,22 @@ public class second_layout extends AppCompatActivity {
     /**
      * 设置X 轴的显示
      */
-    private void getAxisXLables(int begin,int end) {
-        for (int i = begin; i < end+1; i++) {
+    private void getAxisXLables() {
+        for (int i = 0; i < date.length; i++) {
             mAxisXValues.add(new AxisValue(i).setLabel(date[i]));
         }
     }
     /**
      * 图表的每个点的显示
      */
-    private void getAxisPoints(int begin,int end) {
-        for (int i = begin; i < end+1; i++) {
+    private void getAxisPoints() {
+        for (int i = 0; i < score.length; i++) {
             mPointValues.add(new PointValue(i, score[i]));
         }
     }
-    private void initLineChart() {
+    private void initLineChart(int type) {
+        mAxisXValues.clear();
+        mPointValues.clear();
         Line line = new Line(mPointValues).setColor(Color.parseColor("#FFCD41"));  //折线的颜色（橙色）
         List<Line> lines = new ArrayList<Line>();
         line.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.DIAMOND）
@@ -181,14 +200,20 @@ public class second_layout extends AppCompatActivity {
         // Y轴是根据数据的大小自动设置Y轴上限(在下面我会给出固定Y轴数据个数的解决方案)
         Axis axisY = new Axis();  //Y轴
         axisY.setName("");//y轴标注
+        if(type==1){
+            axisY.setName("温度");
+        }else if(type==2){
+            axisY.setName("湿度");
+        }
         axisY.setTextSize(10);//设置字体大小
         data.setAxisYLeft(axisY);  //Y轴设置在左边
         //设置行为属性，支持缩放、滑动以及平移
         lineChart.setInteractive(true);
+        lineChart.setZoomEnabled(true); //可以放大
         lineChart.setZoomType(ZoomType.HORIZONTAL);
         lineChart.setMaxZoom((float) 2);//最大方法比例
-        lineChart.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
-        lineChart.setLineChartData(data);
+        lineChart.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);  //横向滚动
+        lineChart.setLineChartData(data);   //把数据放进chart里
         lineChart.setVisibility(View.VISIBLE);
         //X轴数据的显示个数
         Viewport v = new Viewport(lineChart.getMaximumViewport());
@@ -213,23 +238,29 @@ public class second_layout extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from timedb", null);
         if (cursor != null && cursor.getCount() > 0) {
+            index = 0;
             while(cursor.moveToNext()) {
                 getmytime = cursor.getString(0);
-                gettemperature = cursor.getString(1);
-                gethumi = cursor.getString(2);
+                gettemperature = cursor.getInt(1);
+                gethumi = cursor.getInt(2);
+                Log.d("bishe",getmytime);
+                Log.d("myindex",index+"");
+                date[index]=getmytime;
+                score[index++]=gettemperature;
+
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("mytime", getmytime);
                 map.put("temperature", gettemperature);
                 map.put("humi",gethumi);
                 listItem.add(map);
-                SimpleAdapter mSimpleAdapter = new SimpleAdapter(second_layout.this,listItem,R.layout.activity_second_layout,
+                SimpleAdapter mSimpleAdapter = new SimpleAdapter(second_layout.this,listItem,R.layout.simple,
                         new String[] {"mytime","temperature","humi"},
                         new int[] {R.id.ItemText1,R.id.ItemText2,R.id.ItemText3});
                 lv.setAdapter(mSimpleAdapter);//为ListView绑定适配器
+
             }
         }
         cursor.close();
         db.close();
     }
-
 }

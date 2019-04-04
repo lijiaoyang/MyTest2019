@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <TextView
         android:id="@+id/ItemText1"
         android:layout_width="match_parent"
@@ -22,4 +22,38 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textSize="24sp" />
+</LinearLayout>
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+                android:id="@+id/ItemText1"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textSize="18sp"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:id="@+id/ItemText2"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textSize="18sp"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/ItemText3"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textSize="18sp"
+                android:layout_weight="1"/>
+    </LinearLayout>
 </LinearLayout>

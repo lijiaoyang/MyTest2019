@@ -16,9 +16,9 @@ import android.widget.Toast;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String create_timedb = "create table timedb("+
-            "mytime DATE primary key,"+
-            "temperature integer,"+
-            "humi integer)";
+            "mytime DATE primary key NOT NULL,"+
+            "temperature integer NOT NULL,"+
+            "humi integer NOT NULL)";
 
     private Context mContext;
     // 第一个参数Context上下文，

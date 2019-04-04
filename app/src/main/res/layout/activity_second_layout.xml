@@ -57,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="插入@"
+        android:text="近期"
         android:textSize="18sp"
         android:layout_weight="1"
         android:id="@+id/button_SeeTime"/>
@@ -65,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="查询@"
+        android:text="今日"
         android:layout_weight="1"
         android:textSize="18sp"
         android:id="@+id/button_SeeTodayTime"/>

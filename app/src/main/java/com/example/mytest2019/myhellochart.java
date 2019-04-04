@@ -35,11 +35,11 @@ public class myhellochart extends AppCompatActivity {
         setContentView(R.layout.myhellochart_layout);
         Intent intent = getIntent();
         Bundle b1 = this.getIntent().getExtras();
-        date = b1.getStringArray("myhellotime");
+        date = b1.getStringArray("myhellotimecur");
         Bundle b2 = this.getIntent().getExtras();
-        tempdata = b2.getIntArray("myhellotemp");
+        tempdata = b2.getIntArray("myhellotempcur");
         Bundle b3 = this.getIntent().getExtras();
-        humidata = b3.getIntArray("myhellohumi");
+        humidata = b3.getIntArray("myhellohumicur");
         for (int i = 0; i < date.length; i++) {
             Log.d("myhello123",date[i]+" "+tempdata[i]+" "+humidata[i]);
         }

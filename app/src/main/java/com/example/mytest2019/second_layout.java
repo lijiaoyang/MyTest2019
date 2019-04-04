@@ -1,11 +1,12 @@
 package com.example.mytest2019;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.Picture;
+//import android.support.v7.app.AlertDialog;
+import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,18 +15,6 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import lecho.lib.hellocharts.gesture.ContainerScrollType;
-import lecho.lib.hellocharts.gesture.ZoomType;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.model.ValueShape;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.view.LineChartView;
 import java.util.Calendar;
 
 import android.app.DatePickerDialog;
@@ -38,8 +27,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
-import android.database.sqlite.SQLiteOpenHelper;
-import org.w3c.dom.Text;
 
 //近期温湿度
 public class second_layout extends AppCompatActivity {
@@ -64,19 +51,26 @@ public class second_layout extends AppCompatActivity {
         FVBI();
         setScore(mEditText1);
         setScore(mEditText2);
+        //查看近期温湿度折线图
         seetime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tempedit = (EditText)findViewById(R.id.editText2);
                 humiedit = (EditText)findViewById(R.id.editText3);
-                tim1 = mEditText1.getText().toString();
-                tim2 = mEditText2.getText().toString();
-                temp1 = Integer.parseInt(tempedit.getText().toString());
-                humi1 = Integer.parseInt(humiedit.getText().toString());
-                addinfo();
-                Toast.makeText(second_layout.this,"已经插入",Toast.LENGTH_SHORT).show();
+                if (mEditText1.length()==0||mEditText2.length()==0||tempedit.length()==0||humiedit.length()==0){
+                    showAlterDialog();  // 警告对话框
+                }
+                if (mEditText1.length()!=0&&mEditText2.length()!=0&&tempedit.length()!=0&&humiedit.length()!=0){
+                    temp1 = Integer.parseInt(tempedit.getText().toString());
+                    humi1 = Integer.parseInt(humiedit.getText().toString());
+                    tim1 = mEditText1.getText().toString(); //起始日期
+                    tim2 = mEditText2.getText().toString(); //终止日期
+                    addinfo();
+                    Toast.makeText(second_layout.this,"已经插入",Toast.LENGTH_SHORT).show();
+                }
             }
         });
+        //查看当天温湿度折线图
         seetodaytime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,19 +79,19 @@ public class second_layout extends AppCompatActivity {
                 Intent intent = new Intent();
 
                 Bundle b1 = new Bundle();
-                b1.putStringArray("myhellotime",date);
+                b1.putStringArray("myhellotimecur",date);
                 intent.putExtras(b1);
 
                 Bundle b2 = new Bundle();
-                b2.putIntArray("myhellotemp",tempdata);
+                b2.putIntArray("myhellotempcur",tempdata);
                 intent.putExtras(b2);
 
                 Bundle b3 = new Bundle();
-                b3.putIntArray("myhellohumi",humidata);
+                b3.putIntArray("myhellohumicur",humidata);
                 intent.putExtras(b3);
-
                 intent.setClass(second_layout.this,myhellochart.class);
                 startActivity(intent);
+                Toast.makeText(second_layout.this,"当天12小时温湿度",Toast.LENGTH_SHORT).show();
             }
         });
         //删除按钮：
@@ -164,6 +158,19 @@ public class second_layout extends AppCompatActivity {
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
+    private void showAlterDialog(){
+        final AlertDialog.Builder alterDiaglog = new AlertDialog.Builder(second_layout.this);
+        alterDiaglog.setIcon(R.mipmap.ic_launcher);//图标
+        alterDiaglog.setTitle("警告");//文字
+        alterDiaglog.setMessage("日期未填写完整");//提示消息
+        alterDiaglog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create();
+        alterDiaglog.show();
+    }
+    //往数据库插入数据
     public void addinfo(){
         dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -178,7 +185,9 @@ public class second_layout extends AppCompatActivity {
         //第二个参数是数据库名
         dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from timedb ORDER BY mytime ASC", null);
+        Cursor cursor = db.rawQuery(
+                "select * from timedb ORDER BY mytime ASC",
+                null);
         if (cursor != null && cursor.getCount() > 0) {
             index = 0;
             while(cursor.moveToNext()) {
@@ -200,11 +209,9 @@ public class second_layout extends AppCompatActivity {
                         new String[] {"mytime","temperature","humi"},
                         new int[] {R.id.ItemText1,R.id.ItemText2,R.id.ItemText3});
                 lv.setAdapter(mSimpleAdapter);//为ListView绑定适配器
-
             }
         }
         cursor.close();
         db.close();
     }
-
 }

@@ -74,8 +74,12 @@ public class second_layout extends AppCompatActivity {
         seetodaytime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryinfo();
+                tim1 = mEditText1.getText().toString(); //起始日期
+                tim2 = mEditText2.getText().toString(); //终止日期
+                queryinfo(tim1,tim2);
+/*
                 Toast.makeText(second_layout.this,"查询数据库",Toast.LENGTH_SHORT).show();
+*/
                 Intent intent = new Intent();
 
                 Bundle b1 = new Bundle();
@@ -91,7 +95,9 @@ public class second_layout extends AppCompatActivity {
                 intent.putExtras(b3);
                 intent.setClass(second_layout.this,myhellochart.class);
                 startActivity(intent);
+/*
                 Toast.makeText(second_layout.this,"当天12小时温湿度",Toast.LENGTH_SHORT).show();
+*/
             }
         });
         //删除按钮：
@@ -145,13 +151,13 @@ public class second_layout extends AppCompatActivity {
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month+1;
                 if(month>9 && dayOfMonth >9)
-                    PickTime = month + "-" + dayOfMonth;
+                    PickTime = year + "-" +month + "-" + dayOfMonth;
                 else if (month>9 && dayOfMonth <=9)
-                    PickTime = month + "-0" + dayOfMonth;
+                    PickTime = year + "-" +month + "-0" + dayOfMonth;
                 else if (month<=9 && dayOfMonth >9)
-                    PickTime = "0" + month + "-" + dayOfMonth;
+                    PickTime = year + "-" +"0" + month + "-" + dayOfMonth;
                 else if (month<=9 && dayOfMonth <=9)
-                    PickTime = "0" + month + "-0" + dayOfMonth;
+                    PickTime = year + "-" +"0" + month + "-0" + dayOfMonth;
                 medit.setText(PickTime);
                 Toast.makeText(second_layout.this, PickTime, Toast.LENGTH_SHORT).show();
             }
@@ -180,14 +186,19 @@ public class second_layout extends AppCompatActivity {
         values.put("humi", humi1);
         db.insert("timedb",null,values);
     }
-    public void queryinfo(){
+    public String trans(String str){
+        str = str.replaceAll("\"","\'");
+        str = "\"" + str + "\"";
+        return str;
+    }
+    public void queryinfo(String t1,String t2){
+        t1 = trans(t1);
+        t2 = trans(t2);
         final ArrayList<HashMap<String, Object>> listItem = new ArrayList <HashMap<String,Object>>();/*在数组中存放数据*/
-        //第二个参数是数据库名
         dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery(
-                "select * from timedb ORDER BY mytime ASC",
-                null);
+                "select * from timedb WHERE mytime between "+ t1 +" and "+ t2 , null);  //+" ORDER BY mytime ASC"
         if (cursor != null && cursor.getCount() > 0) {
             index = 0;
             while(cursor.moveToNext()) {
@@ -196,10 +207,10 @@ public class second_layout extends AppCompatActivity {
                 gethumi = cursor.getInt(2);
                 Log.d("bishe",getmytime);
                 Log.d("myindex",index+"");
+                //存入数组
                 date[index]=getmytime;
                 tempdata[index]=gettemperature;
                 humidata[index++]=gethumi;
-
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("mytime", getmytime);
                 map.put("temperature", gettemperature);

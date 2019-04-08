@@ -17,7 +17,7 @@
             android:text="温度："
             android:gravity="center_horizontal"
             android:textSize="16sp"
-            android:layout_margin="25dp"
+            android:layout_margin="20dp"
             android:layout_weight="1"/>
         <TextView
             android:id="@+id/Curwendu"
@@ -39,7 +39,7 @@
             android:text="湿度："
             android:gravity="center_horizontal"
             android:textSize="16sp"
-            android:layout_margin="25dp"
+            android:layout_margin="20dp"
             android:layout_weight="1"/>
 
         <TextView
@@ -59,7 +59,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="25dp"
+            android:layout_margin="20dp"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="加湿器开关："
@@ -68,7 +68,10 @@
         <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_centerInParent = "true"
             android:textOff="开"
             android:textOn="关" />
     </LinearLayout>
@@ -84,7 +87,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="25dp"
+            android:layout_margin="20dp"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="热风开关："
@@ -93,7 +96,9 @@
         <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:layout_weight="1"
+            android:gravity="center_horizontal"
             android:layout_centerInParent = "true"
             android:textOff="开"
             android:textOn="关" />
@@ -109,7 +114,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="25dp"
+            android:layout_margin="20dp"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="冷风开关："
@@ -118,7 +123,10 @@
         <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_centerInParent = "true"
             android:textOff="开"
             android:textOn="关" />
     </LinearLayout>

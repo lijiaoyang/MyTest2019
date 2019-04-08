@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:text="时间"
             android:textSize="18sp"
-            android:layout_weight="1"/>
+            android:layout_weight="3"/>
         <TextView
             android:text="温度"
             android:textSize="18sp"

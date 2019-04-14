@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:layout_weight="1"
-        android:hint="输入temperature"
+        android:hint="输入温度"
         android:inputType="datetime"
         android:textAlignment="center" />
     <EditText
@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="输入humi"
+        android:hint="输入湿度"
         android:layout_weight="1"
         android:inputType="number"
         android:textAlignment="center" />
@@ -57,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="近期"
+        android:text="近期/添加"
         android:textSize="18sp"
         android:layout_weight="1"
         android:id="@+id/button_SeeTime"/>
@@ -65,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="今日"
+        android:text="今日/查询"
         android:layout_weight="1"
         android:textSize="18sp"
         android:id="@+id/button_SeeTodayTime"/>
@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:text="时间"
             android:textSize="18sp"
-            android:layout_weight="3"/>
+            android:layout_weight="2"/>
         <TextView
             android:text="温度"
             android:textSize="18sp"

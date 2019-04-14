@@ -2,16 +2,8 @@ package com.example.mytest2019;
 
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Date:2019/3/27
- * Time:11:36
- * author:jiaoyang
- **/
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
@@ -29,7 +21,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         super(context,name ,factory,version);
         mContext = context;
     }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         //调用SQLiteDatabase中的execSQL（）执行建表语句。
@@ -37,7 +28,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         //创建成功
         Toast.makeText(mContext, "创建成功", Toast.LENGTH_SHORT).show();
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //更新表

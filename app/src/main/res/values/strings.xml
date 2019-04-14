@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SmartHome</string>
-</resources>
+    <string name="str_temp">温度：</string>
+    </resources>

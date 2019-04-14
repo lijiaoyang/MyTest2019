@@ -38,7 +38,6 @@
                 android:text="TextView"
                 android:textSize="18sp"
                 android:layout_weight="1"/>
-
             <TextView
                 android:id="@+id/ItemText2"
                 android:textAlignment="center"

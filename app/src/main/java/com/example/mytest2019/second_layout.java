@@ -1,11 +1,11 @@
 package com.example.mytest2019;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-//import android.support.v7.app.AlertDialog;
 import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,15 +32,16 @@ import android.widget.Toast;
 public class second_layout extends AppCompatActivity {
     String PickTime;
     String[] date = new String[20];
+    int[] Clock = new int[20];
     int[] tempdata = new int[20];
     int[] humidata = new int[20];
-    private EditText mEditText1,mEditText2;
+    private EditText mEditText1,mEditText2,mEditText3;
     private Button seetime,seetodaytime,delete;
     String tim1,tim2,deletetime;
-    int temp1,humi1,index=0;
+    int temp1,humi1,index=0,clock;
     private SQLiteHelper dbHelper;  //数据库
     String getmytime;
-    int gettemperature,gethumi;
+    int gettemperature,gethumi,getmyclock;
     private ListView lv;
     EditText tempedit,humiedit;
 
@@ -55,8 +56,8 @@ public class second_layout extends AppCompatActivity {
         seetime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tempedit = (EditText)findViewById(R.id.editText2);
-                humiedit = (EditText)findViewById(R.id.editText3);
+                tempedit = findViewById(R.id.editText2);
+                humiedit = findViewById(R.id.editText3);
                 if (mEditText1.length()==0||mEditText2.length()==0||tempedit.length()==0||humiedit.length()==0){
                     showAlterDialog();  // 警告对话框
                 }
@@ -76,28 +77,27 @@ public class second_layout extends AppCompatActivity {
             public void onClick(View v) {
                 tim1 = mEditText1.getText().toString(); //起始日期
                 tim2 = mEditText2.getText().toString(); //终止日期
-                queryinfo(tim1,tim2);
-/*
-                Toast.makeText(second_layout.this,"查询数据库",Toast.LENGTH_SHORT).show();
-*/
-                Intent intent = new Intent();
+                if (mEditText1.length()==0||mEditText2.length()==0){
+                    showAlterDialog();  // 警告对话框
+                }
+                else {
+                    queryinfo(tim1,tim2);
+                    Intent intent = new Intent();
 
-                Bundle b1 = new Bundle();
-                b1.putStringArray("myhellotimecur",date);
-                intent.putExtras(b1);
+                    Bundle b1 = new Bundle();
+                    b1.putStringArray("myhellotimecur",date);
+                    intent.putExtras(b1);
 
-                Bundle b2 = new Bundle();
-                b2.putIntArray("myhellotempcur",tempdata);
-                intent.putExtras(b2);
+                    Bundle b2 = new Bundle();
+                    b2.putIntArray("myhellotempcur",tempdata);
+                    intent.putExtras(b2);
 
-                Bundle b3 = new Bundle();
-                b3.putIntArray("myhellohumicur",humidata);
-                intent.putExtras(b3);
-                intent.setClass(second_layout.this,myhellochart.class);
-                startActivity(intent);
-/*
-                Toast.makeText(second_layout.this,"当天12小时温湿度",Toast.LENGTH_SHORT).show();
-*/
+                    Bundle b3 = new Bundle();
+                    b3.putIntArray("myhellohumicur",humidata);
+                    intent.putExtras(b3);
+                    intent.setClass(second_layout.this,myhellochart.class);
+                    startActivity(intent);
+                }
             }
         });
         //删除按钮：
@@ -114,13 +114,14 @@ public class second_layout extends AppCompatActivity {
         });
     }
     public void FVBI(){
-        mEditText1 = (EditText) findViewById(R.id.datepicker1);
-        mEditText2 = (EditText) findViewById(R.id.datepicker2);
-        seetime = (Button)findViewById(R.id.button_SeeTime);
-        seetodaytime = (Button)findViewById(R.id.button_SeeTodayTime);
-        lv=(ListView)findViewById(R.id.listview);
-        delete = (Button)findViewById(R.id.button_delete);
+        mEditText1 = findViewById(R.id.datepicker1);
+        mEditText2 = findViewById(R.id.datepicker2);
+        seetime = findViewById(R.id.button_SeeTime);
+        seetodaytime = findViewById(R.id.button_SeeTodayTime);
+        lv=findViewById(R.id.listview);
+        delete = findViewById(R.id.button_delete);
     }
+    @SuppressLint("ClickableViewAccessibility")
     public void setScore(final EditText medit){
         medit.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -186,6 +187,7 @@ public class second_layout extends AppCompatActivity {
         values.put("humi", humi1);
         db.insert("timedb",null,values);
     }
+    //不能删！！！
     public String trans(String str){
         str = str.replaceAll("\"","\'");
         str = "\"" + str + "\"";
@@ -205,14 +207,13 @@ public class second_layout extends AppCompatActivity {
                 getmytime = cursor.getString(0);
                 gettemperature = cursor.getInt(1);
                 gethumi = cursor.getInt(2);
-                Log.d("bishe",getmytime);
-                Log.d("myindex",index+"");
                 //存入数组
                 date[index]=getmytime;
                 tempdata[index]=gettemperature;
                 humidata[index++]=gethumi;
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("mytime", getmytime);
+                map.put("myclock",getmyclock);
                 map.put("temperature", gettemperature);
                 map.put("humi",gethumi);
                 listItem.add(map);

@@ -8,9 +8,11 @@ import android.widget.Toast;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String create_timedb = "create table timedb("+
-            "mytime DATE primary key NOT NULL,"+
-            "temperature integer NOT NULL,"+
-            "humi integer NOT NULL)";
+            "mytime DATE  NOT NULL,"+
+            "myclock integer NOT NULL,"+
+            "temperature float NOT NULL,"+
+            "humi float NOT NULL,"+
+            "primary key(mytime,myclock))";
 
     private Context mContext;
     // 第一个参数Context上下文，
@@ -25,8 +27,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         //调用SQLiteDatabase中的execSQL（）执行建表语句。
         db.execSQL(create_timedb);
-        //创建成功
-        Toast.makeText(mContext, "创建成功", Toast.LENGTH_SHORT).show();
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

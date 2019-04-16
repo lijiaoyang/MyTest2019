@@ -1,8 +1,10 @@
 package com.example.mytest2019;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
@@ -19,21 +21,20 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class FirstActivity extends AppCompatActivity {
 
     private DatagramSocket socket;
     public Handler receiveHandler;
-    private Boolean listenStatus=false;
     public String receivewendu,receiveshidu;
-    public TextView textViewshidu,textViewwendu;
-    public byte[] f2={(byte)0xf2};
-    public byte[] f3={(byte)0xf3};
-    public byte[] f4={(byte)0xf4};
-    public byte[] f5={(byte)0xf5};
-    public byte[] f6={(byte)0xf6};
-    public byte[] f7={(byte)0xf7};
-    public byte[] time=new byte[7];
+    public TextView textViewwendu,textViewshidu;
+    //数据库存储
+    int time_oclock;
+    float temp,humi;
+    String dates;
+    private SQLiteHelper dbHelper;  //数据库
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +43,15 @@ public class FirstActivity extends AppCompatActivity {
         Button buttonCurrent = findViewById(R.id.button_current);   //近期温湿度
         Button buttonSetting = findViewById(R.id.button_setting);   //设置边界
         Button buttonSynchronize = findViewById(R.id.button_synchronize);   //同步时间
+        Button buttonInse = findViewById(R.id.button_inse);//插入数据库
         textViewwendu=findViewById(R.id.Curwendu);
         textViewshidu=findViewById(R.id.Curshidu);
+        //为了使得下位机可以发送UDP数据报
         WifiManager manager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         final WifiManager.MulticastLock lock= manager.createMulticastLock("test wifi");
         buttonCurrent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //页面跳转
                 Intent intent = new Intent(FirstActivity.this,second_layout.class);
                 startActivity(intent);
             }
@@ -64,23 +66,14 @@ public class FirstActivity extends AppCompatActivity {
         buttonSynchronize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                CurrentTime currentTime = new CurrentTime();
-//                currentTime.GetTime();
-//                Log.d("yeartime", currentTime.my_time_1);
-//                Log.d("hourtime", currentTime.my_time_2);
-//                new SendSignalData().start();
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//
-////                            lock.release();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }).start();
                 new SendSignalData().start();
+                showdialog("已同步数据");
+            }
+        });
+        buttonInse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addToDB();
             }
         });
         receiveHandler = new Handler()
@@ -117,114 +110,7 @@ public class FirstActivity extends AppCompatActivity {
                     Log.d("wenshidu",receivewendu + " "+receiveshidu);
                     Message msg = new Message();
                     receiveHandler.sendMessage(msg);
-//                    String reply = new String(packet2.getData(),packet2.getOffset(),packet2.getLength());
-//                    Log.d("myre",reply);
-
                     socket2.close();
-
-            }catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-            }
-        }
-    }
-    public class SendSignalHumiHigh extends Thread{
-        @Override
-        public void run() {
-//            super.run();
-            try {
-                socket = new DatagramSocket(6000);
-                InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
-                DatagramPacket packet = new DatagramPacket(f2,1,serverAddr,6000);
-                socket.send(packet);
-                socket.close();
-            }catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-            }
-        }
-    }
-    public class SendSignalHumiLow extends Thread{
-        @Override
-        public void run() {
-//            super.run();
-            try {
-                socket = new DatagramSocket(6000);
-                InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
-                DatagramPacket packet = new DatagramPacket(f3,1,serverAddr,6000);
-                socket.send(packet);
-                socket.close();
-            }catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-            }
-        }
-    }
-    public class SendSignalTempHigh extends Thread{
-        @Override
-        public void run() {
-//            super.run();
-            try {
-                socket = new DatagramSocket(6000);
-                InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
-                DatagramPacket packet = new DatagramPacket(f4,1,serverAddr,6000);
-                socket.send(packet);
-                socket.close();
-            }catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-            }
-        }
-    }
-    public class SendSignalTempLow extends Thread{
-        @Override
-        public void run() {
-//            super.run();
-            try {
-                socket = new DatagramSocket(6000);
-                InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
-                DatagramPacket packet = new DatagramPacket(f5,1,serverAddr,6000);
-                socket.send(packet);
-                socket.close();
-            }catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-            }
-        }
-    }
-    public class SendSignalTempOK extends Thread{
-        @Override
-        public void run() {
-//            super.run();
-            try {
-                socket = new DatagramSocket(6000);
-                InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
-                DatagramPacket packet = new DatagramPacket(f6,1,serverAddr,6000);
-                socket.send(packet);
-                socket.close();
-            }catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-            }
-        }
-    }
-    public class ReceData extends Thread{
-        @Override
-        public void run()
-        {
-            try
-            {
-                socket = new DatagramSocket(6000);
-                byte[] inBuf= new byte[1024];
-                DatagramPacket packet=new DatagramPacket(inBuf,inBuf.length);
-                socket.receive(packet);
-                byte[] buf;
-                buf = packet.getData();//接收的数据存在byte型info数组
-                receivewendu = wendu(buf);
-                receiveshidu= shidu(buf);
-                Log.d("wenshidu",receivewendu + " "+receiveshidu);
-                Message msg = new Message();
-                receiveHandler.sendMessage(msg);
             }catch (Exception e)
             {
                 // TODO Auto-generated catch block
@@ -287,11 +173,11 @@ public class FirstActivity extends AppCompatActivity {
 //        }
 //        else return("未收到湿度");
     }
-    private void showdialog(){
+    private void showdialog(String s){
         android.support.v7.app.AlertDialog dialog = new android.support.v7.app.AlertDialog.Builder(FirstActivity.this).create();//创建对话框
         dialog.setIcon(R.mipmap.ic_launcher);//设置对话框icon
         dialog.setTitle("提示");//设置对话框标题
-        dialog.setMessage("已同步数据");//设置文字显示内容
+        dialog.setMessage(s);//设置文字显示内容
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,"确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -299,5 +185,36 @@ public class FirstActivity extends AppCompatActivity {
             }
         });
         dialog.show();//显示对话框
+    }
+    //往数据库插入数据
+    public void addToDB(){
+        dbHelper = new SQLiteHelper(FirstActivity.this,"timedb",null,1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        //切记！！
+        CurrentTime mycurtime = new CurrentTime();
+        dates = mycurtime.getMy_time();
+        time_oclock = mycurtime.getHour();
+        if (!receivewendu.equals("")){
+            receivewendu = remove_unit(receivewendu);
+            temp = Float.parseFloat(receivewendu);
+        }
+        if (!receiveshidu.equals("")){
+            receiveshidu = remove_unit(receiveshidu);
+            humi = Float.parseFloat(receiveshidu);
+        }
+        Log.d("myinse",dates+" "+time_oclock+" "+temp+" "+humi);
+        values.put("mytime", dates);
+        values.put("myclock",time_oclock);
+        values.put("temperature",temp);
+        values.put("humi", humi);
+        db.insert("timedb",null,values);
+        Toast.makeText(FirstActivity.this,"已上传数据库",Toast.LENGTH_SHORT).show();
+    }
+    //去除日期单位
+    public String remove_unit(String s){
+        String newdates;
+        newdates = s.substring(0,4);
+        return newdates;
     }
 }

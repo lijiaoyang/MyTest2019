@@ -1,7 +1,5 @@
 package com.example.mytest2019;
 
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -31,19 +29,20 @@ import android.widget.Toast;
 //近期温湿度
 public class second_layout extends AppCompatActivity {
     String PickTime;
+    //某时间段内的数据存入数组
     String[] date = new String[20];
     int[] Clock = new int[20];
-    int[] tempdata = new int[20];
-    int[] humidata = new int[20];
-    private EditText mEditText1,mEditText2,mEditText3;
-    private Button seetime,seetodaytime,delete;
-    String tim1,tim2,deletetime;
-    int temp1,humi1,index=0,clock;
+    float[] tempdata = new float[20];
+    float[] humidata = new float[20];
+    private EditText mEditText1,mEditText2;
+    private Button seetime,seetodaytime;
+    String tim1,tim2,timToday;
+    int index=0;
     private SQLiteHelper dbHelper;  //数据库
     String getmytime;
-    int gettemperature,gethumi,getmyclock;
+    int getmyclock;
+    float gettemperature,gethumi;
     private ListView lv;
-    EditText tempedit,humiedit;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,60 +55,46 @@ public class second_layout extends AppCompatActivity {
         seetime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tempedit = findViewById(R.id.editText2);
-                humiedit = findViewById(R.id.editText3);
-                if (mEditText1.length()==0||mEditText2.length()==0||tempedit.length()==0||humiedit.length()==0){
+                if (mEditText1.length()==0||mEditText2.length()==0)
                     showAlterDialog();  // 警告对话框
-                }
-                if (mEditText1.length()!=0&&mEditText2.length()!=0&&tempedit.length()!=0&&humiedit.length()!=0){
-                    temp1 = Integer.parseInt(tempedit.getText().toString());
-                    humi1 = Integer.parseInt(humiedit.getText().toString());
+                if (mEditText1.length()!=0&&mEditText2.length()!=0){
                     tim1 = mEditText1.getText().toString(); //起始日期
                     tim2 = mEditText2.getText().toString(); //终止日期
-                    addinfo();
-                    Toast.makeText(second_layout.this,"已经插入",Toast.LENGTH_SHORT).show();
+                    queryCur(tim1,tim2);
                 }
             }
         });
-        //查看当天温湿度折线图
+        //查看今日温湿度折线图
         seetodaytime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tim1 = mEditText1.getText().toString(); //起始日期
-                tim2 = mEditText2.getText().toString(); //终止日期
-                if (mEditText1.length()==0||mEditText2.length()==0){
-                    showAlterDialog();  // 警告对话框
-                }
-                else {
-                    queryinfo(tim1,tim2);
+                    //获取今日时间
+//                    CurrentTime cur = new CurrentTime();
+//                    timToday = cur.getMy_time();
+                    timToday = mEditText1.getText().toString();
+                    queryToday(timToday);
                     Intent intent = new Intent();
-
                     Bundle b1 = new Bundle();
                     b1.putStringArray("myhellotimecur",date);
                     intent.putExtras(b1);
 
                     Bundle b2 = new Bundle();
-                    b2.putIntArray("myhellotempcur",tempdata);
+                    b2.putIntArray("myhelloclockcur",Clock);
                     intent.putExtras(b2);
 
                     Bundle b3 = new Bundle();
-                    b3.putIntArray("myhellohumicur",humidata);
+                    b3.putFloatArray("myhellotempcur",tempdata);
                     intent.putExtras(b3);
+
+                    Bundle b4 = new Bundle();
+                    b4.putFloatArray("myhellohumicur",humidata);
+                    intent.putExtras(b4);
+
+                     Bundle b5 = new Bundle();
+                     b5.putBoolean("myhelloisdate",false);
+                     intent.putExtras(b5);
                     intent.setClass(second_layout.this,myhellochart.class);
                     startActivity(intent);
-                }
-            }
-        });
-        //删除按钮：
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //删除数据库
-                deletetime=((EditText)findViewById(R.id.datepicker1)).getText().toString();
-                dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                db.delete("timedb","mytime=?",new String[] {deletetime});
-                db.close();
             }
         });
     }
@@ -119,9 +104,7 @@ public class second_layout extends AppCompatActivity {
         seetime = findViewById(R.id.button_SeeTime);
         seetodaytime = findViewById(R.id.button_SeeTodayTime);
         lv=findViewById(R.id.listview);
-        delete = findViewById(R.id.button_delete);
     }
-    @SuppressLint("ClickableViewAccessibility")
     public void setScore(final EditText medit){
         medit.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -151,6 +134,7 @@ public class second_layout extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month+1;
+                year = year - 2000;
                 if(month>9 && dayOfMonth >9)
                     PickTime = year + "-" +month + "-" + dayOfMonth;
                 else if (month>9 && dayOfMonth <=9)
@@ -177,38 +161,34 @@ public class second_layout extends AppCompatActivity {
         }).create();
         alterDiaglog.show();
     }
-    //往数据库插入数据
-    public void addinfo(){
-        dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("mytime", tim1);
-        values.put("temperature",temp1);
-        values.put("humi", humi1);
-        db.insert("timedb",null,values);
-    }
     //不能删！！！
     public String trans(String str){
         str = str.replaceAll("\"","\'");
         str = "\"" + str + "\"";
         return str;
     }
-    public void queryinfo(String t1,String t2){
-        t1 = trans(t1);
-        t2 = trans(t2);
+    //查询近期温湿度
+    public void queryCur(String t1,String t2){
+        t1=trans(t1);
+        t2=trans(t2);
+        Log.d("mycur",t1+" "+t2);
         final ArrayList<HashMap<String, Object>> listItem = new ArrayList <HashMap<String,Object>>();/*在数组中存放数据*/
         dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery(
-                "select * from timedb WHERE mytime between "+ t1 +" and "+ t2 , null);  //+" ORDER BY mytime ASC"
+                "select * from timedb WHERE mytime between "+ t1 +" and "+ t2 +"ORDER BY myclock ASC;", null);
         if (cursor != null && cursor.getCount() > 0) {
             index = 0;
             while(cursor.moveToNext()) {
                 getmytime = cursor.getString(0);
-                gettemperature = cursor.getInt(1);
-                gethumi = cursor.getInt(2);
+                getmyclock = cursor.getInt(1);
+                gettemperature = cursor.getFloat(2);
+                gethumi = cursor.getFloat(3);
+                Log.d("mycurdata",
+                        index+" "+getmytime+" "+getmyclock+" "+gettemperature+" "+gethumi);
                 //存入数组
                 date[index]=getmytime;
+                Clock[index]=getmyclock;
                 tempdata[index]=gettemperature;
                 humidata[index++]=gethumi;
                 HashMap<String, Object> map = new HashMap<String, Object>();
@@ -218,8 +198,46 @@ public class second_layout extends AppCompatActivity {
                 map.put("humi",gethumi);
                 listItem.add(map);
                 SimpleAdapter mSimpleAdapter = new SimpleAdapter(second_layout.this,listItem,R.layout.simple,
-                        new String[] {"mytime","temperature","humi"},
-                        new int[] {R.id.ItemText1,R.id.ItemText2,R.id.ItemText3});
+                        new String[] {"mytime","myclock","temperature","humi"},
+                        new int[] {R.id.ItemText1,R.id.ItemText2,R.id.ItemText3,R.id.ItemText4});
+                lv.setAdapter(mSimpleAdapter);//为ListView绑定适配器
+            }
+        }
+        cursor.close();
+        db.close();
+    }
+    //查询今日温湿度
+    public void queryToday(String t){
+        t = trans(t);
+        Log.d("mytoday",t);
+        final ArrayList<HashMap<String, Object>> listItem = new ArrayList <HashMap<String,Object>>();/*在数组中存放数据*/
+        dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery(
+                "select * from timedb WHERE mytime between "+ t +" and "+ t +"ORDER BY myclock ASC;", null);
+        if (cursor != null && cursor.getCount() > 0) {
+            index = 0;
+            while(cursor.moveToNext()) {
+                getmytime = cursor.getString(0);
+                getmyclock = cursor.getInt(1);
+                gettemperature = cursor.getFloat(2);
+                gethumi = cursor.getFloat(3);
+                Log.d("mytodaydata",
+                        index+" "+getmytime+" "+getmyclock+" "+gettemperature+" "+gethumi);
+                //存入数组
+                date[index]=getmytime;
+                Clock[index]=getmyclock;
+                tempdata[index]=gettemperature;
+                humidata[index++]=gethumi;
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("mytime", getmytime);
+                map.put("myclock",getmyclock);
+                map.put("temperature", gettemperature);
+                map.put("humi",gethumi);
+                listItem.add(map);
+                SimpleAdapter mSimpleAdapter = new SimpleAdapter(second_layout.this,listItem,R.layout.simple,
+                        new String[] {"mytime","myclock","temperature","humi"},
+                        new int[] {R.id.ItemText1,R.id.ItemText2,R.id.ItemText3,R.id.ItemText4});
                 lv.setAdapter(mSimpleAdapter);//为ListView绑定适配器
             }
         }

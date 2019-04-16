@@ -9,6 +9,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
@@ -24,8 +25,10 @@ import lecho.lib.hellocharts.view.LineChartView;
 public class myhellochart extends AppCompatActivity {
     private LineChartView lineChart;
     String[] date = new String[20];
-    int[] tempdata = new int[20];
-    int[] humidata = new int[20];
+    int[] clockdata = new int[20];
+    float[] tempdata = new float[20];
+    float[] humidata = new float[20];
+    Boolean isdate;
     private List<PointValue> mPointValues = new ArrayList<PointValue>();    //温度
     private List<PointValue> mPointValues1 = new ArrayList<PointValue>();   //湿度
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
@@ -38,14 +41,18 @@ public class myhellochart extends AppCompatActivity {
         Bundle b1 = this.getIntent().getExtras();
         date = b1.getStringArray("myhellotimecur");
         Bundle b2 = this.getIntent().getExtras();
-        tempdata = b2.getIntArray("myhellotempcur");
+        clockdata = b2.getIntArray("myhelloclockcur");
         Bundle b3 = this.getIntent().getExtras();
-        humidata = b3.getIntArray("myhellohumicur");
+        tempdata = b3.getFloatArray("myhellotempcur");
+        Bundle b4 = this.getIntent().getExtras();
+        humidata = b4.getFloatArray("myhellohumicur");
+        Bundle b5 = this.getIntent().getExtras();
+        isdate = b5.getBoolean("myhelloisdate");
         for (int i = 0; i < date.length; i++) {
-            Log.d("myhello123",date[i]+" "+tempdata[i]+" "+humidata[i]);
+            Log.d("myhello123",date[i]+" "+clockdata[i]+" "+tempdata[i]+" "+humidata[i]+" "+isdate);
         }
         lineChart = (LineChartView)findViewById(R.id.line_chart);
-        getAxisXLables();
+        getAxisXLables(isdate);
         getAxisPoints();
         getAxisPoints1();
         initLineChart();
@@ -54,9 +61,16 @@ public class myhellochart extends AppCompatActivity {
     /**
      * 设置X 轴的显示
      */
-    private void getAxisXLables() {
-        for (int i = 0; date[i]!=null; i++) {
-            mAxisXValues.add(new AxisValue(i).setLabel(date[i]));
+    private void getAxisXLables(Boolean isDate) {
+        if (isDate == true){
+            for (int i = 0; date[i]!=null; i++) {
+                mAxisXValues.add(new AxisValue(i).setLabel(date[i]));
+            }
+        }
+        else {
+            for (int i = 0; clockdata[i]!=0; i++) {
+                mAxisXValues.add(new AxisValue(i).setLabel(clockdata[i]+""));
+            }
         }
     }
     /**
@@ -79,12 +93,14 @@ public class myhellochart extends AppCompatActivity {
         Line line = new Line(mPointValues).setColor(Color.parseColor("#FFCD41"));  //折线的颜色（橙色）
         Line line1 = new Line(mPointValues1).setColor(Color.parseColor("#7AC5CD")); // 折线的颜色
         List<Line> lines = new ArrayList<Line>();
+        line.setFormatter(new SimpleLineChartValueFormatter(1));
         line.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.DIAMOND）
         line.setCubic(false);//曲线是否平滑，即是曲线还是折线
         line.setFilled(false);//是否填充曲线的面积
         line.setHasLabels(true);//曲线的数据坐标是否加上备注
         line.setHasLines(true);//是否用线显示。如果为false 则没有曲线只有点显示
         line.setHasPoints(true);//是否显示圆点 如果为false 则没有原点只有点显示（每个数据点都是个大的圆点）
+        line1.setFormatter(new SimpleLineChartValueFormatter(1));
         line1.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.DIAMOND）
         line1.setCubic(false);//曲线是否平滑，即是曲线还是折线
         line1.setFilled(false);//是否填充曲线的面积

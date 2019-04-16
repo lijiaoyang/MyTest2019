@@ -25,30 +25,6 @@
             android:ems="10"/>
     </LinearLayout>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp" >
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_weight="1"
-        android:hint="输入温度"
-        android:inputType="datetime"
-        android:textAlignment="center" />
-    <EditText
-        android:id="@+id/editText3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="输入湿度"
-        android:layout_weight="1"
-        android:inputType="number"
-        android:textAlignment="center" />
-    </LinearLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -57,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="近期/添加"
+        android:text="近期"
         android:textSize="18sp"
         android:layout_weight="1"
         android:id="@+id/button_SeeTime"/>
@@ -65,29 +41,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="今日/查询"
+        android:text="今日"
         android:layout_weight="1"
         android:textSize="18sp"
         android:id="@+id/button_SeeTodayTime"/>
     </LinearLayout>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="删除"
-        android:id="@+id/button_delete"
-        android:layout_gravity="center_horizontal"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
         <TextView
-            android:id="@+id/tv_time"
             android:textAlignment="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="时间"
             android:textSize="18sp"
             android:layout_weight="2"/>
+        <TextView
+            android:text="时刻"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
         <TextView
             android:text="温度"
             android:textSize="18sp"
@@ -102,7 +78,6 @@
             android:text="湿度"
             android:textSize="18sp"
             android:layout_weight="1"/>
-
     </LinearLayout>
     <ListView
         android:id="@+id/listview"
@@ -112,3 +87,39 @@
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="wrap_content" />-->
 </LinearLayout>
+
+
+
+
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="horizontal"-->
+    <!--android:padding="10dp" >-->
+    <!--<EditText-->
+    <!--android:id="@+id/editText2"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:ems="10"-->
+    <!--android:layout_weight="1"-->
+    <!--android:hint="输入温度"-->
+    <!--android:inputType="datetime"-->
+    <!--android:textAlignment="center" />-->
+    <!--<EditText-->
+    <!--android:id="@+id/editText3"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:ems="10"-->
+    <!--android:hint="输入湿度"-->
+    <!--android:layout_weight="1"-->
+    <!--android:inputType="number"-->
+    <!--android:textAlignment="center" />-->
+    <!--</LinearLayout>-->
+
+
+    <!--<Button-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="删除"-->
+    <!--android:id="@+id/button_delete"-->
+    <!--android:layout_gravity="center_horizontal"/>-->

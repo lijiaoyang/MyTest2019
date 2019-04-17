@@ -1,9 +1,11 @@
 package com.example.mytest2019;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
@@ -20,14 +22,11 @@ import android.widget.Toast;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 public class FirstActivity extends AppCompatActivity {
-
-    private DatagramSocket socket;
-    public Handler receiveHandler;
+//    private DatagramSocket socket;
+    public Handler receiveHandler,handler,clockhd;
     public String receivewendu,receiveshidu;
     public TextView textViewwendu,textViewshidu;
     //数据库存储
@@ -49,6 +48,9 @@ public class FirstActivity extends AppCompatActivity {
         //为了使得下位机可以发送UDP数据报
         WifiManager manager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         final WifiManager.MulticastLock lock= manager.createMulticastLock("test wifi");
+        SendRequestWithOkhttp();
+        initTimePrompt();
+//        JustClock();
         buttonCurrent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,16 +84,75 @@ public class FirstActivity extends AppCompatActivity {
             {
                 textViewwendu.setText(receivewendu);
                 textViewshidu.setText(receiveshidu);
-                socket.close();
+//                socket.close();
             }
         };
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                textViewwendu.setText(receivewendu);
+                textViewshidu.setText(receiveshidu);
+            }
+        };
+    }
+
+    //定义一个发送json请求数据的代码
+    public void SendRequestWithOkhttp() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DatagramSocket socket = new DatagramSocket(6000);
+                    InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
+                    String s = "s";
+                    byte send[] = s.getBytes();
+                    DatagramPacket packet = new DatagramPacket(send,send.length,serverAddr,6000);
+                    socket.send(packet);
+                    socket.close();
+                    Log.d("mysignal", " ");
+                    //接收
+                    DatagramSocket socket2 = new DatagramSocket(6000);
+                    byte[] data2 = new byte[1024];
+                    DatagramPacket packet2 = new DatagramPacket(data2,data2.length);
+                    socket2.receive(packet2);
+                    byte[] buf = packet2.getData();
+                    receivewendu = wendu(buf);
+                    receiveshidu= shidu(buf);
+                    Log.d("wenshidu",receivewendu + " "+receiveshidu);
+//                    Message message = handler.obtainMessage();
+//                    handler.sendMessage(message);
+                    Message msg = new Message();
+                    handler.sendMessage(msg);
+                    socket2.close();
+                    handler.postDelayed(this, 3000);//延迟发送消息，实现3秒一次发送数据
+                    SendRequestWithOkhttp();       //发送请求
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    //15秒查看一次整点
+    public void JustClock(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                clockhd.postDelayed(this,15000);
+                CurrentTime cur = new CurrentTime();
+                if (cur.JudgeClock()==1){
+                    addToDB();
+                    Toast.makeText(FirstActivity.this,"存入数据库",Toast.LENGTH_SHORT).show();
+                }
+                JustClock();
+            }
+        }).start();
     }
     public class SendSignalData extends Thread{
         @Override
         public void run() {
             try {
                     //发送's'
-                    socket = new DatagramSocket(6000);
+                    DatagramSocket socket = new DatagramSocket(6000);
                     InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
                     String s = "s";
                     byte send[] = s.getBytes();
@@ -217,4 +278,25 @@ public class FirstActivity extends AppCompatActivity {
         newdates = s.substring(0,4);
         return newdates;
     }
+
+
+    private void initTimePrompt() {
+        IntentFilter timeFilter = new IntentFilter();
+        timeFilter.addAction(Intent.ACTION_TIME_TICK);
+        registerReceiver(mTimeReceiver, timeFilter);
+    }
+
+    private BroadcastReceiver mTimeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Calendar cal = Calendar.getInstance();
+            int min = cal.get(Calendar.MINUTE);
+            int sec = cal.get(Calendar.SECOND);
+
+            if (min==0 && sec==0){
+                addToDB();
+                Toast.makeText(FirstActivity.this,"存入数据库",Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 }

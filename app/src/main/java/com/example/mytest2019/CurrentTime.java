@@ -4,14 +4,14 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 public class CurrentTime {
-    public Calendar cal;
-    public int year;
-    public int month;
-    public int day;
-    public int hour;
-    public int minute;
-    public int second;
-    public String my_time;
+    private Calendar cal;
+    private int year;
+    private int month;
+    private int day;
+    private int hour;
+    private int minute;
+    private int second;
+    private String my_time;
 
     public int getHour() {
         if (cal.get(Calendar.AM_PM) == 0)
@@ -43,7 +43,7 @@ public class CurrentTime {
     public int JudgeClock(){
         minute = cal.get(Calendar.MINUTE);
         second = cal.get(Calendar.SECOND);
-        if (minute==0 && second==0){
+        if (minute==10 && second==0){
             return 1;
         }else
             return 0;

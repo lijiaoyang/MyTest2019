@@ -60,30 +60,6 @@
             android:layout_margin="20dp"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="加湿器开关："
-            android:textSize="16sp" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:textOff="开"
-            android:textOn="关" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
             android:text="热风开关："
             android:textSize="16sp" />
 
@@ -93,8 +69,9 @@
             android:layout_margin="20dp"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:textOff="开"
-            android:textOn="关" />
+            android:id="@+id/refeng"
+            android:textOff="关"
+            android:textOn="开" />
     </LinearLayout>
 
     <LinearLayout
@@ -118,12 +95,35 @@
             android:layout_margin="20dp"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:textOff="开"
-            android:textOn="关" />
+            android:id="@+id/lengfeng"
+            android:textOff="关"
+            android:textOn="开"  />
     </LinearLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="加湿器开关："
+            android:textSize="16sp" />
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:id="@+id/jiashiqi"
+            android:textOff="关"
+            android:textOn="开"  />
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp" >
         <Button
@@ -132,6 +132,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="80px"
+            android:background="@drawable/shape"
             android:text="近期温湿度"
             android:textSize="18sp"
             android:layout_weight="1"/>
@@ -141,12 +143,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="120px"
+            android:background="@drawable/shape"
             android:text="设置边界"
             android:textSize="18sp"
             android:layout_weight="1"/>
     </LinearLayout>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp" >
         <Button
@@ -154,16 +158,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:background="@drawable/shape"
             android:text="同步数据"
-            android:layout_weight="1"
+            android:layout_marginLeft="250px"
             android:textSize="18sp" />
-        <Button
-            android:id="@+id/button_inse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="插入"
-            android:layout_weight="1"
-            android:textSize="18sp" />
+        <!--<Button-->
+            <!--android:id="@+id/button_inse"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:text="插入"-->
+            <!--android:layout_weight="1"-->
+            <!--android:textSize="18sp" />-->
     </LinearLayout>
 </LinearLayout>

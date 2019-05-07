@@ -6,5 +6,9 @@
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/line_chart"
         android:layout_width="wrap_content"
-        android:layout_height="430dp" />
+        android:layout_height="280dp" />
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/line_chart2"
+        android:layout_width="wrap_content"
+        android:layout_height="280dp" />
 </LinearLayout>

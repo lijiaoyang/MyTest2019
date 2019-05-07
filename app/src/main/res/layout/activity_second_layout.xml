@@ -25,7 +25,7 @@
             android:ems="10"/>
     </LinearLayout>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp" >
@@ -34,6 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="近期"
+        android:layout_marginLeft="90px"
+        android:background="@drawable/shape"
         android:textSize="18sp"
         android:layout_weight="1"
         android:id="@+id/button_SeeTime"/>
@@ -42,6 +44,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="今日"
+        android:layout_marginLeft="160px"
+        android:background="@drawable/shape"
         android:layout_weight="1"
         android:textSize="18sp"
         android:id="@+id/button_SeeTodayTime"/>

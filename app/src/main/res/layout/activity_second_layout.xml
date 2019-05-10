@@ -87,43 +87,4 @@
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-    <!--<DatePicker-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
 </LinearLayout>
-
-
-
-
-    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:orientation="horizontal"-->
-    <!--android:padding="10dp" >-->
-    <!--<EditText-->
-    <!--android:id="@+id/editText2"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:ems="10"-->
-    <!--android:layout_weight="1"-->
-    <!--android:hint="输入温度"-->
-    <!--android:inputType="datetime"-->
-    <!--android:textAlignment="center" />-->
-    <!--<EditText-->
-    <!--android:id="@+id/editText3"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:ems="10"-->
-    <!--android:hint="输入湿度"-->
-    <!--android:layout_weight="1"-->
-    <!--android:inputType="number"-->
-    <!--android:textAlignment="center" />-->
-    <!--</LinearLayout>-->
-
-
-    <!--<Button-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="删除"-->
-    <!--android:id="@+id/button_delete"-->
-    <!--android:layout_gravity="center_horizontal"/>-->

@@ -160,8 +160,19 @@
             android:layout_gravity="center_horizontal"
             android:background="@drawable/shape"
             android:text="同步数据"
-            android:layout_marginLeft="250px"
-            android:textSize="18sp" />
+            android:layout_marginLeft="80px"
+            android:textSize="18sp"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/button_kaiguan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/shape"
+            android:text="同步开关"
+            android:layout_marginLeft="150px"
+            android:textSize="18sp"
+            android:layout_weight="1"/>
         <!--<Button-->
             <!--android:id="@+id/button_inse"-->
             <!--android:layout_width="wrap_content"-->

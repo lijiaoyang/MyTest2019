@@ -1,18 +1,12 @@
 package com.example.mytest2019;
 
 import android.annotation.SuppressLint;
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
@@ -20,13 +14,9 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +27,7 @@ import java.net.InetAddress;
 import java.util.Calendar;
 
 public class FirstActivity extends AppCompatActivity {
-    public Handler receiveHandler,handler,swhandler;
+    public Handler receiveHandler,handler;
     public String receivewendu,receiveshidu;
     public int reRF,reLF,reJSQ;
     public TextView textViewwendu,textViewshidu;
@@ -47,9 +37,9 @@ public class FirstActivity extends AppCompatActivity {
     float temp,humi;
     String dates;
     private SQLiteHelper dbHelper;  //数据库
-    public BoundSQLite BoundHelper;  //边界数据库
     private boundData application;
-    public byte[] send=new byte[5];
+    public byte[] sendKG=new byte[5];
+    public byte[] sendSHT = new byte[2];
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -59,6 +49,7 @@ public class FirstActivity extends AppCompatActivity {
         Button buttonCurrent = findViewById(R.id.button_current);   //近期温湿度
         Button buttonSetting = findViewById(R.id.button_setting);   //设置边界
         Button buttonSynchronize = findViewById(R.id.button_synchronize);   //同步时间
+        Button buttonKaiGuan = findViewById(R.id.button_kaiguan);   //同步开关
         rf_switch = findViewById(R.id.refeng);
         lf_switch = findViewById(R.id.lengfeng);
         jsq_switch = findViewById(R.id.jiashiqi);
@@ -68,10 +59,7 @@ public class FirstActivity extends AppCompatActivity {
         //为了使得下位机可以发送UDP数据报
         WifiManager manager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         final WifiManager.MulticastLock lock= manager.createMulticastLock("test wifi");
-        SynSHT();   //包含开关信息了
         initTimePrompt();
-        //获取屏幕宽度高度
-        getAndroiodScreenProperty();
         //防止锁屏后进程被杀死
         PowerManager.WakeLock wakeLock;
         PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
@@ -97,8 +85,17 @@ public class FirstActivity extends AppCompatActivity {
         buttonSynchronize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new SendSignalData().start();
+//                new SendSignalData().start();
+                SynSHT();
                 showdialog("已同步数据");
+            }
+        });
+        buttonKaiGuan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tongbuSwitch();
+                SynSwitch();
+                showdialog("已同步开关");
             }
         });
 //        buttonInse.setOnClickListener(new View.OnClickListener() {
@@ -132,8 +129,10 @@ public class FirstActivity extends AppCompatActivity {
                 try {
                     DatagramSocket socket = new DatagramSocket(6000);
                     InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
-                    String s = "s";
-                    byte sendSHT[] = s.getBytes();
+//                    String s = "s";
+//                    byte sendSHT[] = s.getBytes();
+                    char s = 's';
+                    sendSHT[0] = (byte)s;
                     DatagramPacket packet = new DatagramPacket(sendSHT,sendSHT.length,serverAddr,6000);
                     socket.send(packet);
                     socket.close();
@@ -153,15 +152,15 @@ public class FirstActivity extends AppCompatActivity {
                     Message msg = new Message();
                     handler.sendMessage(msg);
                     socket2.close();
-                    handler.postDelayed(this, 3000);//延迟发送消息，实现3秒一次发送数据
-                    SynSHT();       //发送请求
+//                    handler.postDelayed(this, 3000);//延迟发送消息，实现3秒一次发送数据
+//                    SynSHT();       //发送请求
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
     }
-    //同步开关   没用
+    //同步开关
     public void SynSwitch(){
         new Thread(new Runnable() {
             @Override
@@ -169,53 +168,22 @@ public class FirstActivity extends AppCompatActivity {
                 try {
                     DatagramSocket socket = new DatagramSocket(6000);
                     InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
-                    char s = 'a';       //s.getBytes()
-                    send[0] = (byte)s;
-                    send[1] = (byte)reRF;
-                    send[2] = (byte)reLF;
-                    send[3] = (byte)reJSQ;
-                    Log.d("toxiaweiji",send[1]+" "+send[2]+" "+send[3]);
-                    DatagramPacket packet = new DatagramPacket(send,send.length,serverAddr,6000);
+                    char a = 'a';
+                    sendKG[0] = (byte)a;
+                    sendKG[1] = (byte)reRF;
+                    sendKG[2] = (byte)reLF;
+                    sendKG[3] = (byte)reJSQ;
+                    Log.d("toxiaweiji",sendKG[1]+" "+sendKG[2]+" "+sendKG[3]);
+                    DatagramPacket packet = new DatagramPacket(sendKG,sendKG.length,serverAddr,6000);
                     socket.send(packet);
                     socket.close();
-                    swhandler.postDelayed(this, 3000);//延迟发送消息，实现3秒一次发送数据
-                    SynSwitch();       //发送请求
+//                    swhandler.postDelayed(this, 3000);//延迟发送消息，实现3秒一次发送数据
+//                    SynSwitch();       //发送请求
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-    }
-    public class SendSignalData extends Thread{
-        @Override
-        public void run() {
-            try {
-                    //发送's'
-                    DatagramSocket socket = new DatagramSocket(6000);
-                    InetAddress serverAddr = InetAddress.getByName("192.168.1.103");    //下位机IP地址
-                    String s = "s";
-                    byte send[] = s.getBytes();
-                    DatagramPacket packet = new DatagramPacket(send,send.length,serverAddr,6000);
-                    socket.send(packet);
-                    socket.close();
-                    Log.d("mysignal", " ");
-                    //接收
-                    DatagramSocket socket2 = new DatagramSocket(6000);
-                    byte[] data2 = new byte[1024];
-                    DatagramPacket packet2 = new DatagramPacket(data2,data2.length);
-                    socket2.receive(packet2);
-                    byte[] buf = packet2.getData();
-                    receivewendu = wendu(buf);
-                    receiveshidu= shidu(buf);
-                    Log.d("wenshidu",receivewendu + " "+receiveshidu);
-                    Message msg = new Message();
-                    receiveHandler.sendMessage(msg);
-                    socket2.close();
-            }catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-            }
-        }
     }
     public String wendu(byte[] b) {
         String ret = "";
@@ -316,7 +284,7 @@ public class FirstActivity extends AppCompatActivity {
         else
             return 0;
     }
-    private void showdialog(String s){
+    public void showdialog(String s){
         android.support.v7.app.AlertDialog dialog = new android.support.v7.app.AlertDialog.Builder(FirstActivity.this).create();//创建对话框
         dialog.setIcon(R.mipmap.ic_launcher);//设置对话框icon
         dialog.setTitle("提示");//设置对话框标题
@@ -375,16 +343,13 @@ public class FirstActivity extends AppCompatActivity {
             int sec = cal.get(Calendar.SECOND);
             Log.d("timmm",sec+"");
             if (min==0 && sec==0){
+                SynSHT();
                 addToDB();
                 Toast.makeText(FirstActivity.this,"存入数据库",Toast.LENGTH_SHORT).show();
             }
-            else if (sec==0){   //每分钟更新一次开关
-                tongbuSwitch();
-                Toast.makeText(FirstActivity.this,"同步开关",Toast.LENGTH_SHORT).show();
-            }
         }
     };
-    //一分钟判断一次开关
+    //判断开关
     public void tongbuSwitch(){
         application = (boundData)getApplication();
         int diwen = application.getDiwen();
@@ -423,33 +388,4 @@ public class FirstActivity extends AppCompatActivity {
             }
         }
     }
-    //屏幕尺寸判断
-    public void getAndroiodScreenProperty() {
-        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics dm = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(dm);
-        int width = dm.widthPixels;         // 屏幕宽度（像素）
-        int height = dm.heightPixels;       // 屏幕高度（像素）
-        float density = dm.density;         // 屏幕密度（0.75 / 1.0 / 1.5）
-        int densityDpi = dm.densityDpi;     // 屏幕密度dpi（120 / 160 / 240）
-        // 屏幕宽度算法:屏幕宽度（像素）/屏幕密度
-        int screenWidth = (int) (width / density);  // 屏幕宽度(dp)
-        int screenHeight = (int) (height / density);// 屏幕高度(dp)
-
-
-        Log.d("h_bl", "屏幕宽度（像素）：" + width);
-        Log.d("h_bl", "屏幕高度（像素）：" + height);
-        Log.d("h_bl", "屏幕密度（0.75 / 1.0 / 1.5）：" + density);
-        Log.d("h_bl", "屏幕密度dpi（120 / 160 / 240）：" + densityDpi);
-        Log.d("h_bl", "屏幕宽度（dp）：" + screenWidth);
-        Log.d("h_bl", "屏幕高度（dp）：" + screenHeight);
-    }
-//    //查询数据库的边界值
-//    //int Diwen,Gaowen,Dishi,Gaoshi;  //边界数据
-//    public void queryBoundDB(){
-//        BoundHelper = new BoundSQLite(FirstActivity.this,"Bound",null,1);
-//        SQLiteDatabase db = BoundHelper.getWritableDatabase();
-//        Cursor cursor = db.rawQuery("select * from timedb",null);
-//    }
-
 }

@@ -1,6 +1,5 @@
 package com.example.mytest2019;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,7 +36,6 @@ public class myhellochart extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.myhellochart_layout);
-//        Intent intent = getIntent();
         Bundle b1 = this.getIntent().getExtras();
         date = b1.getStringArray("myhellotimecur");
         Bundle b2 = this.getIntent().getExtras();
@@ -51,8 +49,8 @@ public class myhellochart extends AppCompatActivity {
         for (int i = 0; i < date.length; i++) {
             Log.d("myhello123",date[i]+" "+clockdata[i]+" "+tempdata[i]+" "+humidata[i]+" "+isdate);
         }
-        lineChart = (LineChartView)findViewById(R.id.line_chart);
-        lineChart2 = (LineChartView)findViewById(R.id.line_chart2);
+        lineChart = findViewById(R.id.line_chart);
+        lineChart2 = findViewById(R.id.line_chart2);
         getAxisXLables(isdate);
         //温度数据
         getAxisTempPoints();
@@ -62,32 +60,28 @@ public class myhellochart extends AppCompatActivity {
         initHumiLineChart();
     }
 
-    /**
-     * 设置X 轴的显示
-     */
+    //设置X 轴的显示
     private void getAxisXLables(Boolean isDate) {
-        if (isDate == true){
+        if (isDate){
+            //x轴 为 日期
             for (int i = 0; date[i]!=null; i++) {
                 mAxisXValues.add(new AxisValue(i).setLabel(date[i]));
             }
         }
         else {
+            //x轴 为 时钟
             for (int i = 0; clockdata[i]!=0; i++) {
                 mAxisXValues.add(new AxisValue(i).setLabel(clockdata[i]+""));
             }
         }
     }
-    /**
-     * 温度数据的显示
-     */
+    //温度数据的显示---y轴
     private void getAxisTempPoints() {
         for (int i = 0; tempdata[i]!=0; i++) {
             mPointTempValues.add(new PointValue(i, tempdata[i]));
         }
     }
-    /**
-     * 湿度数据的显示
-     */
+    //湿度数据的显示---y轴
     private void getAxisHumiPoints() {
         for (int i = 0; humidata[i]!=0; i++) {
             mPointHumiValues.add(new PointValue(i, humidata[i]));

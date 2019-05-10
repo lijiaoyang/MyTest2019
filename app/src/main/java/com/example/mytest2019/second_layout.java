@@ -26,7 +26,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-//近期温湿度
+//近期温湿度 页面
 public class second_layout extends AppCompatActivity {
     String PickTime;
     //某时间段内的数据存入数组
@@ -55,9 +55,9 @@ public class second_layout extends AppCompatActivity {
         seetime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mEditText1.length()==0||mEditText2.length()==0)
+                if (mEditText1.length()==0 || mEditText2.length()==0)
                     showAlterDialog();  // 警告对话框
-                if (mEditText1.length()!=0&&mEditText2.length()!=0){
+                if (mEditText1.length()!=0 && mEditText2.length()!=0){
                     tim1 = mEditText1.getText().toString(); //起始日期
                     tim2 = mEditText2.getText().toString(); //终止日期
                     queryCur(tim1,tim2);
@@ -68,9 +68,6 @@ public class second_layout extends AppCompatActivity {
         seetodaytime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    //获取今日时间
-//                    CurrentTime cur = new CurrentTime();
-//                    timToday = cur.getMy_time();
                     timToday = mEditText1.getText().toString();
                     queryToday(timToday);
                     Intent intent = new Intent();
@@ -98,7 +95,7 @@ public class second_layout extends AppCompatActivity {
             }
         });
     }
-    public void FVBI(){
+    private void FVBI(){
         mEditText1 = findViewById(R.id.datepicker1);
         mEditText2 = findViewById(R.id.datepicker2);
         seetime = findViewById(R.id.button_SeeTime);
@@ -128,8 +125,6 @@ public class second_layout extends AppCompatActivity {
     }
     public void showDatePickDlg(final EditText medit) {
         Calendar calendar = Calendar.getInstance();
-        calendar = Calendar.getInstance();
-
         DatePickerDialog datePickerDialog = new DatePickerDialog(second_layout.this, new OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {

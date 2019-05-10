@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Calendar;
@@ -29,11 +31,17 @@ import android.widget.Toast;
 //近期温湿度 页面
 public class second_layout extends AppCompatActivity {
     String PickTime;
-    //某时间段内的数据存入数组
+    //当日的数据存入数组
     String[] date = new String[20];
     int[] Clock = new int[20];
     float[] tempdata = new float[20];
     float[] humidata = new float[20];
+    //近期的数据存入数组
+    String[] CurDate = new String[20];
+    int[] CurClock = new int[20];
+    float[] CurTemp = new float[20];
+    float[] CurHumi = new float[20];
+
     private EditText mEditText1,mEditText2;
     private Button seetime,seetodaytime;
     String tim1,tim2,timToday;
@@ -61,6 +69,28 @@ public class second_layout extends AppCompatActivity {
                     tim1 = mEditText1.getText().toString(); //起始日期
                     tim2 = mEditText2.getText().toString(); //终止日期
                     queryCur(tim1,tim2);
+                    Intent intent = new Intent();
+                    Bundle b1 = new Bundle();
+                    b1.putStringArray("myhellotimecur",CurDate);
+                    intent.putExtras(b1);
+
+                    Bundle b2 = new Bundle();
+                    b2.putIntArray("myhelloclockcur",CurClock);
+                    intent.putExtras(b2);
+
+                    Bundle b3 = new Bundle();
+                    b3.putFloatArray("myhellotempcur",CurTemp);
+                    intent.putExtras(b3);
+
+                    Bundle b4 = new Bundle();
+                    b4.putFloatArray("myhellohumicur",CurHumi);
+                    intent.putExtras(b4);
+
+                    Bundle b5 = new Bundle();
+                    b5.putBoolean("myhelloisdate",true);
+                    intent.putExtras(b5);
+                    intent.setClass(second_layout.this,myhellochart.class);
+                    startActivity(intent);
                 }
             }
         });
@@ -171,24 +201,28 @@ public class second_layout extends AppCompatActivity {
         dbHelper = new SQLiteHelper(second_layout.this,"timedb",null,1);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery(
-                "select * from timedb WHERE mytime between "+ t1 +" and "+ t2 +"ORDER BY myclock ASC;", null);
+        "select mytime,AVG(timedb.temperature),AVG(timedb.humi)from timedb WHERE mytime between "+ t1 +" and "+ t2 +" GROUP BY mytime ORDER BY mytime ASC;", null);
         if (cursor != null && cursor.getCount() > 0) {
             index = 0;
             while(cursor.moveToNext()) {
                 getmytime = cursor.getString(0);
-                getmyclock = cursor.getInt(1);
-                gettemperature = cursor.getFloat(2);
-                gethumi = cursor.getFloat(3);
-                Log.d("mycurdata",
-                        index+" "+getmytime+" "+getmyclock+" "+gettemperature+" "+gethumi);
-                //存入数组
-                date[index]=getmytime;
-                Clock[index]=getmyclock;
-                tempdata[index]=gettemperature;
-                humidata[index++]=gethumi;
+                getmyclock = '\0';
+                gettemperature = cursor.getFloat(1);
+                gethumi = cursor.getFloat(2);
+                DecimalFormat decimalFormat=new DecimalFormat(".0");
+                String s1=decimalFormat.format(gettemperature);//format 返回的是字符串
+                String s2=decimalFormat.format(gethumi);//format 返回的是字符串
+                //从字符串转回float
+                gettemperature = Float.parseFloat(s1);
+                gethumi = Float.parseFloat(s2);
+                Log.d("mycurdata",index+" "+getmytime+" "+gettemperature+" "+gethumi);
+                CurDate[index] = getmytime;
+                CurClock[index] = getmyclock;
+                CurTemp[index] = gettemperature;
+                CurHumi[index++] = gethumi;
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("mytime", getmytime);
-                map.put("myclock",getmyclock);
+                map.put("myclock", getmyclock);
                 map.put("temperature", gettemperature);
                 map.put("humi",gethumi);
                 listItem.add(map);
